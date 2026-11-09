@@ -4,15 +4,15 @@ Branch: `bo2-hud` (fork of h1-mod, C++ client + LUI Lua). Owner: sero7k.
 Last updated: 2026-11-09.
 
 ## Goal
-1. Put the Black Ops II in-game HUD (from the CodLegacy Rust/Bevy project) over MWR's HUD, no toggle, all functions intact (health/damage feedback, ammo, streaks, scorebar).
+1. Put OUR CLIENT'S HUD (`crates/ui/src/hud_modern.rs` + `hud_match.rs` in CodLegacyClient; NOT the Black Ops II HUD) over MWR's HUD, no toggle, all functions intact. It already exists as LUI: `tools/hmw_hud/ui_scripts/claude_hud/__init__.lua` in CodLegacyClient, now copied to `data/cdata/ui_scripts/claude_hud/` here (replaces the abandoned `bo2_hud`). Its companion `tools/hmw_ui/claude_ui.lua` (menu/palette restyle, resource CLAUDE_UI, must load first) is not ported yet.
 2. Then port the pause/scoreboard/class menus and the main menu.
 3. Support all HMW usermaps and weapons in the client.
 4. Build the exe as `CoD Legacy.exe` into `C:\Users\Gaming PC\Documents\mwr_game_files\`.
 5. Later: BO2/BO3/Ghosts maps -> MWR format via translation layers (zonetool), not merged engines.
 
 ## Done so far
-- `data/cdata/ui_scripts/bo2_hud/` (`__init__.lua`, `hud.lua`): BO2 HUD. Closes MWR's teamScores/weaponInfo/actionSlot/experienceBar/perks widgets and adds its own layer to `hud.static.scalable` (score bar, ammo box, streaks, player card, fps box). MWR minimap, obituary, hit markers, damage/low-health overlays, hints, scoreboard, killcam are left alone.
-  - Latest change: every part is built in its own pcall, errors are printed to the console as `[bo2_hud] ...`, replaced widgets are also removed from `hud.allWidgets`. Look for `[bo2_hud] loaded`, `mp_hud opened`, `built N parts` in the in-game console.
+- (superseded, removed) `bo2_hud/` was a wrong-target BO2 HUD. Old notes:  Closes MWR's teamScores/weaponInfo/actionSlot/experienceBar/perks widgets and adds its own layer to `hud.static.scalable` (score bar, ammo box, streaks, player card, fps box). MWR minimap, obituary, hit markers, damage/low-health overlays, hints, scoreboard, killcam are left alone.
+  - Latest change: every part is built in its own pcall, errors are printed to the console as `[bo2_hud] ...`, replaced widgets are also removed from `hud.allWidgets`. Look for `[claude_hud] ...` lines in the in-game console.
 - `updater.cpp`: `cg_auto_update` defaults to false.
 - Usermap support (uncommitted work at time of writing, see git log): `fastfiles::usermap_dir(name)` resolves `usermaps\` or `hmw-usermaps\`; used by fastfiles, party, ui_scripting `zoneexists`, arena (adds generated arena entries for HMW maps that have no .arena file; MAX_ARENAS is 64 so the map picker may not list all 66 maps, but `map mp_x` works).
 
