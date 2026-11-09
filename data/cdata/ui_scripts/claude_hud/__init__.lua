@@ -1183,6 +1183,12 @@ local function wrap(type_name, build_ours)
             return stock
         end
         ours:addElement(holder)
+        -- MPHud names each widget's wrapper "wrapper_for_" .. widget.id, so
+        -- every widget needs its own id: take the stock widget's (else the
+        -- widget type's), never the default one all new elements share.
+        pcall(function()
+            ours.id = (stock and stock.id) or type_name
+        end)
         return ours
     end
 end
