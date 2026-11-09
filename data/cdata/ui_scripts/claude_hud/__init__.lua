@@ -170,8 +170,8 @@ end
 
 local CORNER_RIGHT = px(22)
 local CORNER_BOTTOM = px(26)
-local BOX_H = px(54)
-local BOX_W = px(250)
+local BOX_H = px(30)
+local BOX_W = px(170)
 local NAME_H = px(26)
 
 local function build_weapon_hud()
@@ -193,11 +193,11 @@ local function build_weapon_hud()
     local clip = text({
         rightAnchor = true,
         bottomAnchor = true,
-        right = -(CORNER_RIGHT + px(92)),
-        bottom = -(CORNER_BOTTOM + px(8)),
-        width = px(140),
-        height = px(40),
-    }, "SP_HudAmmoCounterFont", WHITE, 1, "Right")
+        right = -(CORNER_RIGHT + px(78)),
+        bottom = -(CORNER_BOTTOM + px(2)),
+        width = px(80),
+        height = px(26),
+    }, "SP_HudItemAmmoFont", WHITE, 1, "Right")
     local drawn = false
     if clip.setupOwnerdraw and CoD.Ownerdraw and CoD.Ownerdraw.CGAmmoMagazine then
         drawn = pcall(function()
@@ -210,11 +210,11 @@ local function build_weapon_hud()
     local stock = text({
         rightAnchor = true,
         bottomAnchor = true,
-        right = -(CORNER_RIGHT + px(14)),
-        bottom = -(CORNER_BOTTOM + px(14)),
-        width = px(72),
+        right = -(CORNER_RIGHT + px(12)),
+        bottom = -(CORNER_BOTTOM + px(2)),
+        width = px(56),
         height = px(26),
-    }, "SP_HudItemAmmoFont", DIM, 0.62, "Left")
+    }, "SP_HudItemAmmoFont", DIM, 0.62, "Right")
     root:addElement(stock)
 
     -- The gun's name, right-aligned over the box.
@@ -225,7 +225,7 @@ local function build_weapon_hud()
         bottom = -(CORNER_BOTTOM + BOX_H + px(2)),
         width = px(500),
         height = px(22),
-    }, "SP_HudWeaponNameFont", WHITE, 1, "Right")
+    }, "SP_HudItemAmmoFont", WHITE, 0.85, "Right")
     root:addElement(gun)
 
     -- Bottom left: his name over a thin health bar.
@@ -276,9 +276,9 @@ local function build_weapon_hud()
             set_state(stock, "c", {
                 rightAnchor = true,
                 bottomAnchor = true,
-                right = -(CORNER_RIGHT + px(14)),
-                bottom = -(CORNER_BOTTOM + px(14)),
-                width = px(72),
+                right = -(CORNER_RIGHT + px(12)),
+                bottom = -(CORNER_BOTTOM + px(2)),
+                width = px(56),
                 height = px(26),
                 color = rest == 0 and LOW or DIM,
                 alpha = rest == 0 and 1 or 0.62,
@@ -1145,10 +1145,6 @@ local function wrap_minimap()
             error(root)
         end
         pcall(function()
-            local map = root:getFirstDescendentById("minimap")
-            if map then
-                edge(map, EDGE, 0.78, 1)
-            end
             local tape = root:getFirstDescendentById("minimapCompass")
             if tape then
                 -- The accent under the tape.
@@ -1208,6 +1204,8 @@ wrap("weaponInfoHudDef", function()
     end
     return root
 end)
+-- The stock equipment box + KILLSTREAK label: the client has no such thing.
+wrap("actionSlotHudDef", function() return fullscreen() end)
 wrap("teamScoresHudDef", build_score_hud)
 wrap("obituary", build_feed)
 wrap("damageFeedbackHudDef", build_hitmarker)
