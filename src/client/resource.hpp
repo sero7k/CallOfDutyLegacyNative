@@ -20,4 +20,6 @@
 
 #define LUA_JSON              311
 
+#define CLAUDE_UI             313
+
 #define DVAR_LIST			  312
