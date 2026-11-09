@@ -263,6 +263,13 @@ rule({
     "h1_ui_header_glitch", "h1_ui_footer_glitch",
 }, { hide = true })
 
+-- H1's green art (pixels, not tints): flat accent, or left out.
+rule({ "h1_ui_divider_green", "h1_ui_progressbar_green" }, { color = UI.ACCENT, alpha = 0.9 })
+rule({
+    "h1_ui_deco_green_triangle", "h1_ui_topbar_title_bg", "h1_ui_topbar_titletext_bg_not_tiled",
+    "h1_title_background", "logo_game_big_glow",
+}, { hide = true })
+
 -- The main menu's logo: ours over it.
 rule({ "h1_logo_mw_medium" }, { logo = true })
 
