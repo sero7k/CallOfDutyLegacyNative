@@ -198,12 +198,7 @@ local function build_weapon_hud()
         width = px(80),
         height = px(26),
     }, "SP_HudItemAmmoFont", WHITE, 1, "Right")
-    local drawn = false
-    if clip.setupOwnerdraw and CoD.Ownerdraw and CoD.Ownerdraw.CGAmmoMagazine then
-        drawn = pcall(function()
-            clip:setupOwnerdraw(CoD.Ownerdraw.CGAmmoMagazine, 1, CoD.TextStyle and CoD.TextStyle.Shadowed)
-        end)
-    end
+    local drawn = true
     root:addElement(clip)
 
     -- The rest of the ammo.
@@ -284,8 +279,11 @@ local function build_weapon_hud()
                 alpha = rest == 0 and 1 or 0.62,
             })
         end
-        if not drawn then
+        local mag = try(nil, Game.GetPlayerClipAmmo)
+        if hidden or mag == nil then
             clip:setText("")
+        else
+            clip:setText(tostring(mag))
         end
 
         local who = try("", Engine.GetDvarString, "name")

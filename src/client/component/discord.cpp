@@ -1,4 +1,5 @@
 #include <std_include.hpp>
+#include <fstream>
 #include "loader/component_loader.hpp"
 
 #include "console.hpp"
@@ -412,7 +413,22 @@ namespace discord
 				handlers.joinRequest = nullptr;
 			}
 
-			Discord_Initialize("947125042930667530", &handlers, 1, nullptr);
+			// "Call Of Duty: Legacy": put our own Discord application's ID (the one
+			// named that in the developer portal) in discord_app_id.txt next to the exe.
+			std::string app_id = "947125042930667530";
+			{
+				std::ifstream id_file("discord_app_id.txt");
+				std::string line;
+				if (id_file && std::getline(id_file, line))
+				{
+					line = utils::string::strip(line);
+					if (!line.empty())
+					{
+						app_id = line;
+					}
+				}
+			}
+			Discord_Initialize(app_id.data(), &handlers, 1, nullptr);
 
 			if (game::environment::is_mp())
 			{
