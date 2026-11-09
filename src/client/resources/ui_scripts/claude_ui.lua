@@ -690,6 +690,34 @@ if in_frontend then
         end)
     end
 
+    -- The main menu: our title (MAIN MENU). Everything it does is H1's own:
+    -- the stock builder runs as it is, only the title it asks for is swapped.
+    do
+        local mb = LUI.MenuBuilder and LUI.MenuBuilder.m_types_build
+        local stock_main = mb and mb.mp_main_menu
+        if stock_main then
+            mb.mp_main_menu = function(...)
+                local template = LUI.MenuTemplate
+                local orig_new = template and template.new
+                if type(orig_new) ~= "function" then
+                    return stock_main(...)
+                end
+                template.new = function(menu_arg, opts, ...)
+                    if type(opts) == "table" then
+                        opts.menu_title = "MAIN MENU"
+                    end
+                    return orig_new(menu_arg, opts, ...)
+                end
+                local ok, res = pcall(stock_main, ...)
+                template.new = orig_new
+                if not ok then
+                    error(res, 0)
+                end
+                return res
+            end
+        end
+    end
+
     local builders = LUI.MenuBuilder and LUI.MenuBuilder.m_types_build
     local stock = builders and builders.menu_xboxlive
     if stock then
