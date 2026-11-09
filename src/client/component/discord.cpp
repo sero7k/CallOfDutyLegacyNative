@@ -415,7 +415,7 @@ namespace discord
 
 			// "Call Of Duty: Legacy": put our own Discord application's ID (the one
 			// named that in the developer portal) in discord_app_id.txt next to the exe.
-			std::string app_id = "947125042930667530";
+			std::string app_id = "1569426698535964702";
 			{
 				std::ifstream id_file("discord_app_id.txt");
 				std::string line;
