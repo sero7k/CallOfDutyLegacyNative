@@ -1187,7 +1187,14 @@ local function wrap(type_name, build_ours)
         -- every widget needs its own id: take the stock widget's (else the
         -- widget type's), never the default one all new elements share.
         pcall(function()
-            ours.id = (stock and stock.id) or type_name
+            local sid = stock and stock.id
+            if type(sid) == "string" and sid ~= "LUIElement" then
+                ours.id = sid
+            else
+                -- (an element with no id of its own reads "LUIElement"; more
+                -- than one of those under the HUD is the duplicate)
+                ours.id = "claude_" .. type_name
+            end
         end)
         return ours
     end
