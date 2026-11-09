@@ -43,6 +43,18 @@ pcall(function()
     in_frontend = Engine.InFrontend() and true or false
 end)
 
+-- Whether the front end (not a match) is up right now. The script loads once,
+-- so this is asked each time rather than remembered.
+local function frontend_now()
+    local ok, v = pcall(function()
+        return Engine.InFrontend()
+    end)
+    if ok then
+        return v and true or false
+    end
+    return in_frontend
+end
+
 ----------------------------------------------------------------------------
 -- Our palette (theme.rs), shared with claude_hud through ClaudeUI.
 ----------------------------------------------------------------------------
@@ -275,7 +287,7 @@ local function rule_for(material)
     end
     local n = names[material]
     local r = n and RULES[n]
-    if r and r.ingame and in_frontend then
+    if r and r.ingame and frontend_now() then
         return nil
     end
     return r
@@ -626,7 +638,9 @@ if LUI.MenuTemplate and type(LUI.MenuTemplate.new) == "function" then
     local orig_template_new = LUI.MenuTemplate.new
     LUI.MenuTemplate.new = function(...)
         local menu = orig_template_new(...)
-        if menu then
+        -- Only the front end's menus get our shade and band; in-match popups
+        -- (team choose, class choose, pause) are left as H1 builds them.
+        if menu and frontend_now() then
             local ok, err = pcall(decorate, menu)
             if not ok then
                 log("menu: " .. tostring(err))
