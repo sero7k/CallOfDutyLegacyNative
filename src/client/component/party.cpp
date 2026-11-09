@@ -214,7 +214,7 @@ namespace party
 
 		std::string get_usermap_file_path(const std::string& mapname, const std::string& extension)
 		{
-			return std::format("usermaps\\{}\\{}{}", mapname, mapname, extension);
+			return std::format("{}\\{}\\{}{}", fastfiles::usermap_dir(mapname), mapname, mapname, extension);
 		}
 
 		// generate hashes so they are cached
@@ -254,8 +254,8 @@ namespace party
 
 			const auto check_file = [&](const usermap_file& file)
 			{
-				const std::string filename = utils::string::va("usermaps/%s/%s%s",
-					mapname.data(), mapname.data(), file.extension.data());
+				const std::string filename = utils::string::va("%s/%s/%s%s",
+					fastfiles::usermap_dir(mapname).data(), mapname.data(), mapname.data(), file.extension.data());
 				const auto source_hash = info.get(file.name);
 				if (source_hash.empty())
 				{

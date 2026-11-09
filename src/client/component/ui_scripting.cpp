@@ -505,7 +505,7 @@ namespace ui_scripting
 					return true;
 				}
 
-				return utils::io::file_exists(utils::string::va("usermaps/%s/%s.ff", zone.data(), zone.data()));
+				return fastfiles::usermap_exists(zone);
 			};
 
 			auto mods_table = table();

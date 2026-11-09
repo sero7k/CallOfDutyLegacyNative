@@ -9,6 +9,7 @@
 #include <utils/hook.hpp>
 #include <utils/io.hpp>
 #include <utils/memory.hpp>
+#include <utils/string.hpp>
 
 #define MAX_ARENAS 64
 
@@ -52,6 +53,33 @@ namespace arena
 			return true;
 		}
 
+		// usermaps shipped without an .arena file (HMW's) get an entry made up
+		// from their name so they show in the map list
+		bool parse_generated_arena(const std::string& mapname)
+		{
+			std::lock_guard<std::recursive_mutex> _0(arena_mutex);
+
+			if (*game::ui_num_arenas >= MAX_ARENAS)
+			{
+				return false;
+			}
+
+			std::string title = mapname.starts_with("mp_") ? mapname.substr(3) : mapname;
+			for (auto& c : title)
+			{
+				c = (c == '_') ? ' ' : static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+			}
+
+			const auto buffer = utils::string::va(
+				"{\n\tmap\t\"%s\"\n\tlongname\t\"%s\"\n"
+				"\tgametype\t\"war dom sd sab koth hq ctf dm gun oic\"\n}\n",
+				mapname.data(), title.data());
+			std::string text = buffer;
+			*game::ui_num_arenas += game::GameInfo_ParseArenas(text.data(), MAX_ARENAS - *game::ui_num_arenas,
+				&game::ui_arena_infos[*game::ui_num_arenas]);
+			return true;
+		}
+
 		void load_arenas_stub()
 		{
 			*game::ui_num_arenas = 0;
@@ -60,9 +88,14 @@ namespace arena
 			parse_arena("mp/basemaps.arena");
 
 			// read all usermap arenas for map list
-			if (std::filesystem::exists("usermaps"))
+			for (const auto* dir : {"usermaps", "hmw-usermaps"})
 			{
-				for (const auto& entry : std::filesystem::directory_iterator("usermaps"))
+				if (!std::filesystem::exists(dir))
+				{
+					continue;
+				}
+
+				for (const auto& entry : std::filesystem::directory_iterator(dir))
 				{
 					if (!entry.is_directory())
 					{
@@ -72,7 +105,11 @@ namespace arena
 					auto mapname = entry.path().filename().string();
 					auto arena_path = entry.path().string() + "/" + mapname + ".arena";
 
-					parse_arena(arena_path);
+					if (!parse_arena(arena_path) && std::string(dir) == "hmw-usermaps" &&
+						utils::io::file_exists(entry.path().string() + "/" + mapname + ".ff"))
+					{
+						parse_generated_arena(mapname);
+					}
 				}
 			}
 		}

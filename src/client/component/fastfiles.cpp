@@ -260,8 +260,8 @@ namespace fastfiles
 
 			if (mapname == usermap_file || mapname == usermap_load_file || mapname == usermap_pak_file)
 			{
-				const auto path = utils::string::va("usermaps\\%s\\%s",
-					usermap_value.data(), mapname.data());
+				const auto path = utils::string::va("%s\\%s\\%s",
+					fastfiles::usermap_dir(usermap_value).data(), usermap_value.data(), mapname.data());
 				if (utils::io::file_exists(path))
 				{
 					return CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING,
@@ -1242,7 +1242,18 @@ namespace fastfiles
 			return false;
 		}
 
-		return utils::io::file_exists(utils::string::va("usermaps\\%s\\%s.ff", name.data(), name.data()));
+		return utils::io::file_exists(utils::string::va("%s\\%s\\%s.ff", usermap_dir(name).data(), name.data(), name.data()));
+	}
+
+	std::string usermap_dir(const std::string& name)
+	{
+		if (!utils::io::file_exists(utils::string::va("usermaps\\%s\\%s.ff", name.data(), name.data())) &&
+			utils::io::file_exists(utils::string::va("hmw-usermaps\\%s\\%s.ff", name.data(), name.data())))
+		{
+			return "hmw-usermaps";
+		}
+
+		return "usermaps";
 	}
 
 	bool is_stock_map(const std::string& name)
