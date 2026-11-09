@@ -18,6 +18,10 @@ local function white()
     return luiglobals.RegisterMaterial("white")
 end
 
+local function say(...)
+    pcall(print, "[bo2_hud]", ...)
+end
+
 local function try(f, ...)
     local ok, a, b, c = pcall(f, ...)
     if ok then
@@ -385,6 +389,13 @@ local function build(hud)
     for _, key in ipairs(replaced) do
         local w = hud[key]
         if w then
+            if hud.allWidgets then
+                for i = #hud.allWidgets, 1, -1 do
+                    if hud.allWidgets[i] == w then
+                        table.remove(hud.allWidgets, i)
+                    end
+                end
+            end
             try(function() w:close() end)
             hud[key] = nil
         end
@@ -401,16 +412,27 @@ local function build(hud)
 
     local parts = {}
     local hardcore = try(GameX.IsHardcoreMode)
+    local function add(name, make)
+        local ok, part = pcall(make)
+        if ok and part then
+            local added, err = pcall(function() layer:addElement(part) end)
+            if added then
+                table.insert(parts, part)
+                return
+            end
+            say(name .. " add failed: " .. tostring(err))
+        else
+            say(name .. " failed: " .. tostring(part))
+        end
+    end
     if not hardcore then
-        table.insert(parts, scorebar())
-        table.insert(parts, ammobox())
-        table.insert(parts, streaks())
+        add("scorebar", scorebar)
+        add("ammobox", ammobox)
+        add("streaks", streaks)
     end
-    table.insert(parts, playercard())
-    table.insert(parts, fpsbox())
-    for _, p in ipairs(parts) do
-        layer:addElement(p)
-    end
+    add("playercard", playercard)
+    add("fpsbox", fpsbox)
+    say("built " .. #parts .. " parts")
 
     local tick = function()
         if hidden() then
@@ -432,10 +454,17 @@ local function build(hud)
     end
 
     layer:addElement(LUI.UITimer.new(50, "bo2_hud_tick"))
-    layer:registerEventHandler("bo2_hud_tick", tick)
-    tick()
+    layer:registerEventHandler("bo2_hud_tick", function()
+        local ok, err = pcall(tick)
+        if not ok and not layer.warned then
+            layer.warned = true
+            say("tick error: " .. tostring(err))
+        end
+    end)
+    pcall(tick)
 
-    hud.static.scalable:addElement(layer)
+    local target = (hud.static and hud.static.scalable) or hud.static or hud
+    target:addElement(layer)
     hud.bo2 = layer
 end
 
@@ -443,6 +472,12 @@ LUI.onmenuopen("mp_hud", function(hud)
     if Engine.InFrontend() then
         return
     end
-    build(hud)
+    say("mp_hud opened")
+    local ok, err = pcall(build, hud)
+    if not ok then
+        say("build failed: " .. tostring(err))
+    end
 end)
+
+say("loaded")
 
