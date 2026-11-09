@@ -50,6 +50,7 @@ namespace ui_scripting
 
 		const auto lui_common = utils::nt::load_resource(LUI_COMMON);
 		const auto lui_updater = utils::nt::load_resource(LUI_UPDATER);
+		const auto claude_ui = utils::nt::load_resource(CLAUDE_UI);
 		const auto lua_json = utils::nt::load_resource(LUA_JSON);
 
 		struct globals_t
@@ -715,6 +716,7 @@ namespace ui_scripting
 			load_script("lui_common", lui_common);
 			load_script("lui_updater", lui_updater);
 			load_script("lua_json", lua_json);
+			load_script("claude_ui", claude_ui); // before ui_scripts/claude_hud
 
 			auto search_paths = filesystem::get_search_paths_rev();
 			search_paths.emplace_back("");

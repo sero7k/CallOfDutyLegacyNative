@@ -4,7 +4,7 @@ Branch: `bo2-hud` (fork of h1-mod, C++ client + LUI Lua). Owner: sero7k.
 Last updated: 2026-11-09.
 
 ## Goal
-1. Put OUR CLIENT'S HUD (`crates/ui/src/hud_modern.rs` + `hud_match.rs` in CodLegacyClient; NOT the Black Ops II HUD) over MWR's HUD, no toggle, all functions intact. It already exists as LUI: `tools/hmw_hud/ui_scripts/claude_hud/__init__.lua` in CodLegacyClient, now copied to `data/cdata/ui_scripts/claude_hud/` here (replaces the abandoned `bo2_hud`). Its companion `tools/hmw_ui/claude_ui.lua` (menu/palette restyle, resource CLAUDE_UI, must load first) is not ported yet.
+1. Put OUR CLIENT'S HUD (`crates/ui/src/hud_modern.rs` + `hud_match.rs` in CodLegacyClient; NOT the Black Ops II HUD) over MWR's HUD, no toggle, all functions intact. It already exists as LUI: `tools/hmw_hud/ui_scripts/claude_hud/__init__.lua` in CodLegacyClient, now copied to `data/cdata/ui_scripts/claude_hud/` here (replaces the abandoned `bo2_hud`). Companion `claude_ui.lua` ported: resource CLAUDE_UI (`src/client/resources/ui_scripts/claude_ui.lua`, `resource.rc`, loaded in `ui_scripting.cpp` before the loose scripts). Keep in sync with CodLegacyClient `tools/hmw_ui`.
 2. Then port the pause/scoreboard/class menus and the main menu.
 3. Support all HMW usermaps and weapons in the client.
 4. Build the exe as `CoD Legacy.exe` into `C:\Users\Gaming PC\Documents\mwr_game_files\`.
